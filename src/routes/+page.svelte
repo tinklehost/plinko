@@ -46,7 +46,7 @@
       <div class="flex items-center justify-between p-2">
         <p class="text-sm text-slate-500">
           <a
-            href="/"
+            href="https://historystudyguide.github.io"
             target="_blank"
             rel="noreferrer"
             class=" text-cyan-600 transition hover:text-cyan-500"

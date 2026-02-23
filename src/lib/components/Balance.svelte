@@ -1,7 +1,7 @@
 <script lang="ts">
   import { balance } from '$lib/stores/game';
 
-  const RESTART_BALANCE = 1000;
+  const RESTART_BALANCE = 200;
 
   function restartGame() {
     balance.set(RESTART_BALANCE);

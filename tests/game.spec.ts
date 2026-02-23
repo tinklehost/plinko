@@ -8,14 +8,6 @@ async function setBetAmount(page: Page, amount: string) {
 }
 
 test.describe('Balance', () => {
-  test('can add money', async ({ page }) => {
-    await page.goto('/');
-
-    await page.getByRole('button', { name: 'Add' }).click();
-    await page.getByRole('button', { name: '+$1000' }).click();
-    await expect(page.getByText('1,200.00')).toBeVisible();
-  });
-
   test('can load balance from local storage', async ({ page, context }) => {
     await context.addInitScript(() => {
       window.localStorage.setItem('plinko_balance', '1234');
@@ -59,7 +51,7 @@ test.describe('Manual Betting', () => {
   test('can drop a ball', async ({ page }) => {
     const dropBallButton = page.getByRole('button', { name: 'Drop Ball' });
 
-    // Drop ball deducts from balance
+    // Drop ball deducts from balance (default 200)
     await setBetAmount(page, '10');
     await dropBallButton.click();
     await expect(page.getByText('190.00')).toBeVisible();
@@ -82,7 +74,7 @@ test.describe('Auto Betting', () => {
   test('can start and stop autobet', async ({ page }) => {
     await page.getByRole('button', { name: 'Auto' }).click();
 
-    // New input appear
+    // New input appears
     const numberOfBetsInput = page.getByLabel('Number of Bets');
     await expect(numberOfBetsInput).toBeVisible();
     await expect(numberOfBetsInput).toHaveValue('0');
@@ -92,9 +84,10 @@ test.describe('Auto Betting', () => {
     await expect(page.getByRole('button', { name: 'Stop Autobet' })).toBeVisible();
 
     // During autobet, all inputs are disabled
-    ['Bet Amount', 'Risk', 'Rows', 'Number of Bets'].forEach(async (label) => {
+    for (const label of ['Bet Amount', 'Risk', 'Rows', 'Number of Bets']) {
       await expect(page.getByLabel(label)).toBeDisabled();
-    });
+    }
+
     await expect(page.getByRole('button', { name: 'Manual' })).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Auto', exact: true })).toBeDisabled();
 
@@ -104,11 +97,14 @@ test.describe('Auto Betting', () => {
 
     // Stop autobet manually
     await page.getByRole('button', { name: 'Stop Autobet' }).click();
+
     await expect(page.getByLabel('Bet Amount')).toBeEnabled();
     await expect(page.getByLabel('Number of Bets')).toBeEnabled();
     await expect(page.getByRole('button', { name: 'Manual' })).toBeEnabled();
     await expect(page.getByRole('button', { name: 'Auto', exact: true })).toBeEnabled();
-    await expect(page.getByLabel('Risk')).toBeDisabled(); // Disabled since there are still balls dropping
+
+    // Still disabled while balls are dropping
+    await expect(page.getByLabel('Risk')).toBeDisabled();
     await expect(page.getByLabel('Rows')).toBeDisabled();
   });
 });

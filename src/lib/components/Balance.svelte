@@ -1,6 +1,13 @@
 <script lang="ts">
   import { balance } from '$lib/stores/game';
 
+  const RESTART_BALANCE = 1000;
+
+  function restartGame() {
+    balance.set(RESTART_BALANCE);
+    localStorage.setItem('plinko_balance', String(RESTART_BALANCE));
+  }
+
   $: balanceFormatted = $balance.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -16,4 +23,11 @@
       {balanceFormatted}
     </span>
   </div>
+
+  <button
+    on:click={restartGame}
+    class="bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500 active:bg-blue-700 sm:text-base"
+  >
+    Restart
+  </button>
 </div>
